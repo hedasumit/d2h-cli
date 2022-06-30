@@ -1,0 +1,14 @@
+{
+  "name": "d2h",
+  "version": "1.0.0",
+  "description": "Command line application for d2h management",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Sumit Heda",
+  "license": "ISC",
+  "dependencies": {
+    "node-cache": "^5.1.2"
+  }
+}
