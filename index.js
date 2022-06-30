@@ -1,4 +1,5 @@
 const NodeCache = require('node-cache');
+const _ = require('lodash');
 const myCache = new NodeCache();
 myCache.set('balance', 0);
 myCache.set('package', [{ 'name': 'c1', 'price': 0 }, { 'name': 'c2', 'price': 0 }, { 'name': 'c3', 'price': 0 }]);
@@ -77,17 +78,19 @@ let recursiveAsyncReadLine = function () {
                                 categories[parseInt(category) - 1].channels.forEach(function (entry) {
                                     console.log('Channel name is ' + entry.name + ' and there prize is ' + entry.price);
                                 });
-                                readline.question(`Add Channel`, channel => {
+                                readline.question(`Add Channel `, channel => {
                                     // check channel is valid or not
-                                    categories[parseInt(category) - 1].channels.forEach(function (entry) {
-                                        console.log('Channel name is ' + entry.name + ' and there prize is ' + entry.price);
-                                    });
-                                    if (myCache.get('balance') >= 0) {
+                                    if (myCache.get('balance') <= 0) {
                                         console.log(`You don’t have sufficient balance to add this channel in your tariff plan`);
                                         resolve(recursiveAsyncReadLine());
                                     } else {
-
-                                        myCache.set('balance', myCache.get('balance') - 1)
+                                        // add that channel to the package
+                                        let channelObject = _.find(categories[parseInt(category) - 1].channels, function (o) { return o.name == channel; });
+                                        let terrifPackages = myCache.get('package');
+                                        terrifPackages.push(channelObject)
+                                        myCache.set('package', terrifPackages);
+                                        myCache.set('balance', myCache.get('balance') - channelObject.price);
+                                        resolve(recursiveAsyncReadLine());
                                     }
                                 })
                             }
@@ -96,12 +99,15 @@ let recursiveAsyncReadLine = function () {
                     break;
                 case '5':
                     return new Promise((resolve, reject) => {
-                        readline.question(`Enter channel name to remove`, removeChannel => {
-                            if (1) {
-                                myCache.get('package')
+                        readline.question(`Enter channel name to remove `, removeChannel => {
+                            if (_.findIndex(myCache.get('package'), function (o) { return o.name == removeChannel; }) >= 0) {
                                 // remove channel from the package list 
-                                
-
+                                let terrifChannels = myCache.get('package');
+                                _.remove(terrifChannels, {
+                                    name: removeChannel
+                                });
+                                myCache.set('package', terrifChannels)
+                                resolve(recursiveAsyncReadLine());
                             } else {
                                 console.log(`You don’t have ${removeChannel} in your tariff plan`);
                                 resolve(recursiveAsyncReadLine());

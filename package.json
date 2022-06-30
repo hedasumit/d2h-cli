@@ -9,6 +9,7 @@
   "author": "Sumit Heda",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^4.17.21",
     "node-cache": "^5.1.2"
   }
 }
